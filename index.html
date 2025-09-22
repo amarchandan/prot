@@ -3,71 +3,95 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Amar Chandan</title>
-    <meta
-      name="description"
-      content="Amar Chandan - Noob Developer"
-    />
-    <meta
-      name="keywords"
-      content="Amar Chandan"
-    />
+    <title>Amar Chandan | Portfolio</title>
+
+    <!-- 🔧 SEO Improvements -->
+    <meta name="description" content="Portfolio of Amar Chandan - Student, Noob Developer" />
+    <meta name="keywords" content="Amar Chandan, Portfolio, Developer, Student" />
     <meta name="author" content="Amar Chandan" />
-    <link rel="canonical" href="" />
+    <link rel="canonical" href="https://amarchandan.github.io/" />
+
+    <!-- 🔗 OpenGraph / Social Meta -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Amar Chandan | Noob Developer" />
     <meta property="og:site_name" content="Amar Chandan Portfolio" />
-    <meta property="og:url" content="" />
-    <meta
-      property="og:image"
-      content="/images/selfie.jpg"
-    />
-    <meta
-      property="og:description"
-      content="wanna see something.. satap bitch"
-    />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Amar Chandan | Noob Developer " />
-    <meta
-      name="twitter:description"
-      content="Portfolio of Amar Chandan - Noob programmer"
-    />
-    <meta
-      name="twitter:image"
-      content="/images/selfie.jpg"
-    />
-    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+    <meta property="og:url" content="https://amarchandan.github.io/" />
+    <meta property="og:image" content="/images/selfie.jpg" />
+    <meta property="og:description" content="Amar Chandan - Student & Noob Developer. Wanna see something? Stay tuned 😎" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap"
-    />
+    <!-- 🐦 Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Amar Chandan | Noob Developer" />
+    <meta name="twitter:description" content="Portfolio of Amar Chandan - Student & Programmer" />
+    <meta name="twitter:image" content="/images/selfie.jpg" />
+
+    <!-- 🎨 Fonts & Styles -->
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap" />
     <link rel="stylesheet" href="/css/styles.min.css" />
+
+    <!-- ✅ Preload Background Video for Faster Rendering -->
+    <link rel="preload" as="video" href="/images/background.webm" type="video/webm" />
   </head>
 
   <body>
+    <!-- 🌍 Background World Map -->
     <div class="world-map"></div>
 
+    <!-- 🎥 Video Background -->
     <div class="video-background">
       <video autoplay muted loop playsinline>
         <source src="/images/background.webm" type="video/webm" />
       </video>
     </div>
 
+    <!-- 🖥 Terminal Window -->
     <div class="card terminal">
       <div class="card-header">Terminal</div>
       <div class="card-body"></div>
     </div>
 
+    <!-- 📇 Cards Container -->
     <div class="cards-container"></div>
 
-    <script src="/js/ua-parser.min.js"></script>
-    <script src="/js/analytics.min.js"></script>
-    <script src="/js/terminal.min.js"></script>
-    <script src="/js/app.min.js"></script>
+    <!-- ⚡ Optimized Scripts (Defer for Performance) -->
+    <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1.0.39/src/ua-parser.min.js" defer></script>
+    <script src="/js/analytics.min.js" defer></script>
+    <script src="/js/terminal.min.js" defer></script>
+    <script src="/js/app.min.js" defer></script>
+
+    <!-- 📊 Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX'); // <-- Replace with your GA4 ID
+    </script>
+
+    <!-- 🕵️‍♂️ UAParser + Custom Analytics -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const parser = new UAParser();
+        const result = parser.getResult();
+
+        // Console Debug (Remove in Production)
+        console.log("User Device Info:", result);
+
+        // Example: Send to custom backend if available
+        if (window.sendAnalyticsData) {
+          window.sendAnalyticsData({
+            browser: result.browser,
+            os: result.os,
+            device: result.device,
+            cpu: result.cpu,
+            userAgent: result.ua,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      });
+    </script>
   </body>
 </html>
