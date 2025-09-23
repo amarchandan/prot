@@ -1,55 +1,155 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap"
-    />
-    <link rel="stylesheet" href="css/styles.min.css" />
+<head>
+  <meta charset="utf-8" />
+  <title>Amar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Amar</title>
-    <meta charset="utf-8" />
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap" rel="stylesheet"/>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Exo 2", sans-serif;
+      background: #111;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .video-background {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: -1;
+    }
+    .video-background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card {
+      background: rgba(0,0,0,0.85);
+      border: 1px solid #444;
+      border-radius: 10px;
+      margin: 10px;
+      padding: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      position: absolute;
+    }
+    .card-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .cards-container {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .cards-container.loaded {
+      visibility: visible;
+      opacity: 1;
+    }
+    /* Terminal */
+    .terminal {
+      width: 500px;
+      margin: 100px auto;
+      background: black;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <div class="video-background">
+    <video autoplay muted loop>
+      <source src="images/background.webm" type="video/webm" />
+    </video>
+  </div>
 
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Amar" />
-    <meta property="og:site_name" content="Personal Website" />
-    <meta property="og:url" content="/" />
-    <meta
-      property="og:image"
-      content="images/selfie.jpg"
-    />
-    <meta name="twitter:title" content="Amar" />
+  <!-- Terminal -->
+  <div class="card terminal">
+    <div class="card-header">Terminal</div>
+    <div class="card-body"></div>
+  </div>
 
-    <meta
-      name="twitter:image"
-      content="images/selfie.jpg"
-    />
-    <meta name="twitter:card" content="summary" />
-  </head>
+  <!-- Cards -->
+  <div class="cards-container"></div>
 
-  <body>
-    <div class="world-map"></div>
-    <div class="video-background">
-      <video autoplay muted loop>
-        <source src="images/background.webm" type="video/webm" />
-      </video>
-    </div>
-    <div class="card terminal">
-      <div class="card-header">Terminal</div>
-      <div class="card-body"></div>
-    </div>
-    <div class="cards-container"></div>
+  <script>
+    // ---------- Terminal Class ----------
+    var Terminal = function (options) {
+      var self = this;
+      this.typingSpeed = options.typingSpeed || 100;
+      this.lineCount = 0;
+      this.commands = options.commands || [];
+      this.container = options.container;
+      this.done = options.done || function(){};
+      this.pause = options.pause || 500;
 
-    <script src="js/ua-parser.min.js"></script>
-    <script src="js/analytics.min.js"></script>
+      this.newLine = function () {
+        var command = self.commands[self.lineCount];
+        if (!command) { self.done(); return; }
 
-    <script src="js/terminal.min.js"></script>
-    <script src="js/app.min.js"></script>
-  </body>
+        var tl = document.createElement("div");
+        tl.classList.add("slick-terminal-line");
+        tl.innerHTML = '<span style="color:lime;">></span> <span class="text"></span>';
+        self.container.appendChild(tl);
+
+        var textEl = tl.querySelector(".text");
+
+        var i = 0;
+        var typing = setInterval(function(){
+          textEl.innerHTML += command.text[i];
+          i++;
+          if(i >= command.text.length){
+            clearInterval(typing);
+            self.lineCount++;
+            setTimeout(self.newLine, self.pause);
+          }
+        }, self.typingSpeed);
+      };
+
+      this.newLine();
+    };
+
+    // ---------- Cards ----------
+    var cards = [
+      { title: "Profile", html: "<p>Name: Amar Chandan<br>Profession: Student</p>", top: 50, left: 50 },
+      { title: "Skillset", html: "<ul><li>Web Development</li><li>Cloud</li><li>Cybersecurity</li></ul>", top: 200, left: 200 },
+      { title: "Languages", html: "<p>C, C++, Python, Rust</p>", top: 400, left: 100 }
+    ];
+    var cardsContainer = document.querySelector(".cards-container");
+
+    function renderCards(){
+      cards.forEach(function(card){
+        var el = document.createElement("div");
+        el.className = "card";
+        el.style.top = card.top+"px";
+        el.style.left = card.left+"px";
+        el.innerHTML = "<div class='card-header'>"+card.title+"</div><div class='card-body'>"+card.html+"</div>";
+        cardsContainer.appendChild(el);
+      });
+    }
+
+    // ---------- Init Terminal ----------
+    var terminalWrap = document.querySelector(".terminal");
+    new Terminal({
+      container: terminalWrap.querySelector(".card-body"),
+      typingSpeed: 50,
+      commands: [
+        { text: 'load profile -firstName "Amar" -lastName "Chandan"' },
+        { text: "loading..." }
+      ],
+      done: function(){
+        setTimeout(function(){
+          terminalWrap.style.display = "none";
+          renderCards();
+          cardsContainer.classList.add("loaded");
+        }, 1000);
+      }
+    });
+  </script>
+</body>
 </html>
