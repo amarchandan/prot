@@ -1,133 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
   <title>Amar Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     body {
       margin: 0;
-      font-family: "Exo 2", sans-serif;
+      font-family: monospace;
       background: #0d1117;
       color: #fff;
-      overflow-x: hidden;
     }
-
-    /* Terminal Box */
     .terminal {
-      background: #000;
-      border: 1px solid #0ff;
-      width: 400px;
-      height: 200px;
+      width: 320px;
       margin: 100px auto;
-      padding: 10px;
-      font-family: monospace;
+      background: #001f1f;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #0ff;
+      box-shadow: 0 0 10px rgba(0,255,255,0.4);
+    }
+    .terminal-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0ff;
       font-size: 14px;
-      color: #0f0;
-      box-shadow: 0 0 15px #0ff;
     }
-
-    /* Cards Container */
+    .terminal-body {
+      font-size: 13px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
     .cards-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+      display: none;
+      text-align: center;
       margin-top: 50px;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease, transform 1s ease;
     }
-    .cards-container.loaded {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Card Flip */
     .card {
-      width: 200px;
-      height: 250px;
-      perspective: 1000px;
+      display: inline-block;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 10px;
+      width: 250px;
+      box-shadow: 0 0 10px rgba(0,255,255,0.2);
     }
-    .card-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.8s;
-    }
-    .card:hover .card-inner {
-      transform: rotateY(180deg);
-    }
-    .card-front,
-    .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 18px;
-    }
-    .card-front {
-      background: #1e90ff;
-    }
-    .card-back {
-      background: #ff6347;
-      transform: rotateY(180deg);
+    .card h2 {
+      margin-top: 0;
+      color: #0ff;
     }
   </style>
 </head>
 <body>
   <!-- Terminal -->
-  <div class="terminal" id="terminal"></div>
+  <div class="terminal" id="terminal">
+    <div class="terminal-header">TERMINAL</div>
+    <div class="terminal-body" id="terminal-body"></div>
+  </div>
 
   <!-- Cards -->
   <div class="cards-container" id="cards">
     <div class="card">
-      <div class="card-inner">
-        <div class="card-front">👨 About Me</div>
-        <div class="card-back">Developer | Learner</div>
-      </div>
+      <h2>Profile</h2>
+      <p>Name: Amar</p>
+      <p>Profession: Student</p>
     </div>
     <div class="card">
-      <div class="card-inner">
-        <div class="card-front">💻 Projects</div>
-        <div class="card-back">Networking | Web</div>
-      </div>
+      <h2>Skills</h2>
+      <ul>
+        <li>Web Development</li>
+        <li>Cloud</li>
+        <li>Cybersecurity</li>
+      </ul>
     </div>
     <div class="card">
-      <div class="card-inner">
-        <div class="card-front">📩 Contact</div>
-        <div class="card-back">email@example.com</div>
-      </div>
+      <h2>Languages</h2>
+      <p>C, C++, Python, Rust</p>
     </div>
   </div>
 
   <script>
-    // Terminal typing effect
+    const terminalBody = document.getElementById("terminal-body");
     const terminal = document.getElementById("terminal");
-    const text = "Loading data...";
-    let i = 0;
+    const cards = document.getElementById("cards");
 
-    function typeWriter() {
-      if (i < text.length) {
-        terminal.innerHTML += text.charAt(i);
+    const lines = [
+      "load profile -firstName Amar -lastName Chandan",
+      "loading data...",
+      "fetching skills...",
+      "fetching languages...",
+      "initializing UI..."
+    ];
+
+    let i = 0;
+    function typeLine() {
+      if (i < lines.length) {
+        const line = document.createElement("div");
+        line.textContent = "> " + lines[i];
+        terminalBody.appendChild(line);
         i++;
-        setTimeout(typeWriter, 100);
+        setTimeout(typeLine, 800);
       } else {
-        // after typing complete → hide terminal and show cards
         setTimeout(() => {
           terminal.style.display = "none";
-          document.getElementById("cards").classList.add("loaded");
+          cards.style.display = "block";
         }, 1000);
       }
     }
 
-    window.onload = typeWriter;
+    // Start typing
+    typeLine();
   </script>
 </body>
 </html>
