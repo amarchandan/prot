@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Amar — Hacker Portfolio</title>
+
+<!-- icons font -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+  :root{
+    --bg:#071218;
+    --panel:#071e22;
+    --neon:#00f6d9;
+    --accent:#67B6B9;
+    --muted:#94a3a3;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{
+    background: radial-gradient(ellipse at 10% 10%, rgba(0,246,217,0.03), transparent 10%),
+                linear-gradient(180deg, #001219 0%, #071218 60%);
+    color:#cfece7;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+
+  /* subtle noise */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,0.01) 0.5px, transparent 0.5px);
+    background-size:3px 3px;opacity:0.35;
+    mix-blend-mode:overlay;
+  }
+
+  /* container */
+  .wrap{max-width:1200px;margin:0 auto;padding:28px;box-sizing:border-box;}
+
+  /* Terminal intro */
+  .terminal-wrap{display:flex;justify-content:center;align-items:flex-start;min-height:60vh;padding-top:40px;}
+  .terminal{
+    width: min(880px,92%);
+    max-width:920px;
+    border-radius:8px;
+    border:1px solid rgba(0,255,210,0.06);
+    background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.55));
+    box-shadow:0 8px 40px rgba(0,0,0,0.6), 0 0 24px rgba(3, 197, 172, 0.03) inset;
+    padding:18px;
+    color:var(--neon);
+    position:relative;
+    overflow:hidden;
+  }
+  .term-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .dots{display:flex;gap:6px}
+  .dot{width:12px;height:12px;border-radius:50%;opacity:0.95}
+  .dot.red{background:#ff5f56}
+  .dot.yellow{background:#ffbd2e}
+  .dot.green{background:#27c93f}
+  .term-title{font-size:12px;color:var(--muted);letter-spacing:1px}
+  .term-body{background:transparent;min-height:130px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;font-size:14px;line-height:1.4;color:#bff7ee;white-space:pre-wrap}
+  .term-row{display:block;opacity:0.98}
+  .caret{display:inline-block;width:8px;height:16px;background:var(--neon);margin-left:6px;vertical-align:middle;animation:blink 1s steps(1) infinite}
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+  .small-muted{color:var(--muted);font-size:12px;margin-top:6px}
+
+  /* main dashboard (hidden at start) */
+  .dashboard{display:none;opacity:0;transition:opacity .6s ease, transform .6s ease;transform:translateY(10px);padding-top:18px}
+  .dashboard.loaded{display:block;opacity:1;transform:none}
+
+  /* header */
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:40px;height:40px;border-radius:6px;background:linear-gradient(135deg,var(--neon),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#002b29}
+  .title{font-size:20px;letter-spacing:1px}
+  .nav{display:flex;gap:12px;align-items:center}
+  .nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:6px;font-size:14px}
+  .nav a:hover{color:var(--neon);background:var(--glass)}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+  @media (max-width:980px){.grid{grid-template-columns:1fr;}}
+  .left-col{display:flex;flex-direction:column;gap:18px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:16px;border:1px solid rgba(0,255,210,0.03);box-shadow:0 8px 40px rgba(0,0,0,0.6)}
+  .card h3{margin:0;color:var(--neon)}
+  .card p{color:var(--muted);margin-top:8px}
+
+  /* projects */
+  .projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media (max-width:640px){.projects-grid{grid-template-columns:1fr}}
+  .project{padding:12px;border-radius:8px;border:1px solid rgba(0,255,210,0.03);background:linear-gradient(180deg, rgba(0,0,0,0.04), transparent)}
+  .project h4{margin:0;color:#bff7ee}
+  .project p{margin:8px 0;color:var(--muted);font-size:13px}
+  .project a{display:inline-block;margin-top:8px;color:var(--accent);text-decoration:none;font-weight:600}
+
+  /* blog */
+  .blog-list{display:flex;flex-direction:column;gap:8px}
+  .post{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent)}
+  .post h4{margin:0;color:#bff7ee}
+  .post p{margin:8px 0;color:var(--muted);font-size:13px}
+
+  /* right sidebar */
+  .sidebar .about-avatar{width:80px;height:80px;border-radius:8px;background:linear-gradient(135deg,var(--neon),var(--accent));display:flex;align-items:center;justify-content:center;color:#002b29;font-weight:700;margin-bottom:12px}
+  .contact-links{display:flex;gap:8px;flex-wrap:wrap}
+  .contact-links a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);text-decoration:none;color:var(--muted)}
+  .contact-links a:hover{color:var(--neon)}
+
+  /* footer small */
+  .small{font-size:12px;color:var(--muted);margin-top:12px}
+
+  /* subtle hover */
+  a.btn{display:inline-block;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.03);color:var(--neon);text-decoration:none}
+  a.btn:hover{transform:translateY(-2px)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Terminal Intro -->
+    <div id="intro" class="terminal-wrap" aria-live="polite">
+      <div class="terminal" role="status" aria-label="Terminal loading">
+        <div class="term-head">
+          <div class="dots" aria-hidden="true">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+          </div>
+          <div class="term-title">TERMINAL</div>
+        </div>
+
+        <div id="termBody" class="term-body" tabindex="0"></div>
+        <div id="termNote" class="small-muted">Press <kbd>Esc</kbd> to skip</div>
+      </div>
+    </div>
+
+    <!-- Dashboard (hidden until terminal done) -->
+    <div id="dashboard" class="dashboard" aria-hidden="true">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">AC</div>
+          <div>
+            <div class="title">Amar Chandan</div>
+            <div class="small">Hacker-style portfolio — networking · devops · security</div>
+          </div>
+        </div>
+        <nav class="nav" role="navigation" aria-label="Main navigation">
+          <a href="#projects" onclick="scrollToSection(event,'projects')">Projects</a>
+          <a href="#blog" onclick="scrollToSection(event,'blog')">Blog</a>
+          <a href="#contact" onclick="scrollToSection(event,'contact')">Contact</a>
+        </nav>
+      </div>
+
+      <div class="grid">
+        <div class="left-col">
+          <!-- About card -->
+          <section class="card" id="about">
+            <h3>About</h3>
+            <p id="aboutText">Hi — I'm Amar. I like building networks, automations, and small tools. This site starts with a terminal intro for the vibe. Edit projects/blog arrays in code to add your work.</p>
+          </section>
+
+          <!-- Projects -->
+          <section class="card" id="projects">
+            <h3>Projects</h3>
+            <div id="projectsGrid" class="projects-grid" aria-live="polite"></div>
+            <div style="margin-top:10px"><a class="btn" href="#" id="addProjectBtn">+ Add placeholder project</a></div>
+          </section>
+
+          <!-- Blog -->
+          <section class="card" id="blog">
+            <h3>Blog</h3>
+            <div id="blogList" class="blog-list" aria-live="polite"></div>
+            <div style="margin-top:10px"><a class="btn" href="#" id="addPostBtn">+ Add placeholder post</a></div>
+          </section>
+        </div>
+
+        <aside class="sidebar">
+          <div class="card" style="text-align:center">
+            <div class="about-avatar" aria-hidden="true">AC</div>
+            <div style="text-align:left">
+              <strong>Contact</strong>
+              <div class="small">amarchandan@example.com</div>
+            </div>
+            <div class="contact-links" style="margin-top:12px">
+              <a href="mailto:amarchandan@outlook.com"><i class="fa fa-envelope"></i> Email</a>
+              <a href="https://github.com/amarchandan" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+              <a href="https://www.linkedin.com/in/theamarchandan" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+            </div>
+
+            <div class="small" style="margin-top:12px">Status: <strong style="color:var(--neon)">Available</strong></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Quick Links</h3>
+            <p class="small">Use the Projects/Blog buttons to add placeholders. Replace arrays in script with real items.</p>
+            <div style="margin-top:8px"><a class="btn" href="#contact" onclick="scrollToSection(event,'contact')">Reach Out</a></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+/* =========================
+   Editable content arrays
+   ========================= */
+const projectsData = [
+  {
+    id: "proj-1",
+    title: "NetMapper",
+    description: "Lightweight network topology visualizer & scanner.",
+    url: "https://github.com/amarchandan/netmapper"
+  },
+  {
+    id: "proj-2",
+    title: "CLI Tools",
+    description: "Small set of productivity CLI tools (bash + python).",
+    url: "#"
+  },
+  {
+    id: "proj-3",
+    title: "Portfolio Shell",
+    description: "This interactive terminal intro & dashboard.",
+    url: "#"
+  }
+];
+
+const blogData = [
+  {
+    id: "post-1",
+    title: "How I built a tiny network scanner",
+    excerpt: "Short writeup about building a portable scanner using Python scapy and asyncio.",
+    content: "Full article content goes here — replace this with your blog post HTML or markdown converted to HTML.",
+    date: "2025-09-01"
+  },
+  {
+    id: "post-2",
+    title: "Learning cloud basics",
+    excerpt: "Notes on provisioning and automating infra on Azure/AWS.",
+    content: "Full article content goes here.",
+    date: "2025-06-10"
+  }
+];
+
+/* =========================
+   Terminal typing logic
+   ========================= */
+const termEl = document.getElementById('termBody');
+const introWrap = document.getElementById('intro');
+const dashboard = document.getElementById('dashboard');
+
+const terminalLines = [
+  'init sequence ...',
+  'establishing secure context ...',
+  'loading profile -firstName "Amar" -lastName "Chandan"',
+  'fetching projects...',
+  'fetching blog posts...',
+  'initializing UI modules...',
+  'access granted'
+];
+
+let lineIndex = 0;
+
+function typeText(targetEl, text, speed=28, onComplete){
+  let i=0;
+  const span = document.createElement('span');
+  span.className = 'term-row';
+  targetEl.appendChild(span);
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  span.appendChild(document.createTextNode('> '));
+  const textNode = document.createElement('span');
+  span.appendChild(textNode);
+  span.appendChild(caret);
+
+  const t = setInterval(()=> {
+    textNode.textContent += text[i] || '';
+    i++;
+    if(i > text.length){
+      clearInterval(t);
+      // keep caret blink for a moment then remove
+      setTimeout(()=> {
+        caret.remove();
+        if(onComplete) onComplete();
+      }, 220);
+    }
+  }, speed);
+}
+
+/* sequential typing */
+function runTerminalSequence(onDone){
+  if(lineIndex < terminalLines.length){
+    typeText(termEl, terminalLines[lineIndex], 28, ()=>{
+      lineIndex++;
+      setTimeout(()=> runTerminalSequence(onDone), 200 + Math.random()*300);
+    });
+  } else {
+    // finished
+    if(onDone) onDone();
+  }
+}
+
+/* allow skip by Esc key */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' || e.key === 'Esc'){
+    revealDashboard();
+  }
+});
+
+/* reveal / hide functions */
+function revealDashboard(){
+  // if already visible, ignore
+  if(dashboard.classList.contains('loaded')) return;
+  // hide intro
+  introWrap.style.display = 'none';
+  // show dashboard
+  dashboard.classList.add('loaded');
+  dashboard.setAttribute('aria-hidden','false');
+  // populate data
+  renderProjects();
+  renderBlog();
+}
+
+/* run terminal and then reveal */
+runTerminalSequence(()=>{
+  setTimeout(revealDashboard, 700);
+});
+
+/* =========================
+   Projects & Blog rendering
+   ========================= */
+const projectsGrid = document.getElementById('projectsGrid');
+const blogList = document.getElementById('blogList');
+
+function renderProjects(){
+  projectsGrid.innerHTML = '';
+  projectsData.forEach(p=>{
+    const el = document.createElement('article');
+    el.className = 'project';
+    el.innerHTML = `<h4>${escapeHtml(p.title)}</h4>
+                    <p>${escapeHtml(p.description)}</p>
+                    <a href="${p.url || '#'}" target="_blank" rel="noopener">View</a>`;
+    projectsGrid.appendChild(el);
+  });
+}
+
+function renderBlog(){
+  blogList.innerHTML = '';
+  blogData.forEach(post=>{
+    const el = document.createElement('article');
+    el.className = 'post';
+    el.innerHTML = `<h4>${escapeHtml(post.title)}</h4>
+                    <div class="small" style="color:var(--muted)">${escapeHtml(post.date)}</div>
+                    <p>${escapeHtml(post.excerpt)}</p>
+                    <a href="#" data-id="${post.id}" class="btn read-more">Read more</a>`;
+    blogList.appendChild(el);
+  });
+
+  // attach read-more handlers
+  document.querySelectorAll('.read-more').forEach(a=>{
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      const id = this.dataset.id;
+      openBlogPost(id);
+    });
+  });
+}
+
+/* open blog (quick modal-like) */
+function openBlogPost(id){
+  const post = blogData.find(p=>p.id===id);
+  if(!post) return alert('Post not found');
+  const modal = document.createElement('div');
+  modal.style.position='fixed';
+  modal.style.inset='6%';
+  modal.style.background='#041218';
+  modal.style.border='1px solid rgba(0,255,210,0.04)';
+  modal.style.borderRadius='10px';
+  modal.style.padding='18px';
+  modal.style.overflow='auto';
+  modal.style.zIndex = 9999;
+  modal.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0;color:var(--neon)">${escapeHtml(post.title)}</h3>
+      <button aria-label="close" id="closeModal" style="background:none;border:none;color:var(--muted);font-size:18px">✕</button>
+    </div>
+    <div style="margin-top:12px;color:var(--muted)">${escapeHtml(post.date)}</div>
+    <div style="margin-top:16px;color:#cfece7">${post.content}</div>`;
+  document.body.appendChild(modal);
+  document.getElementById('closeModal').addEventListener('click', ()=> modal.remove());
+}
+
+/* utility: escape simple html for text fields */
+function escapeHtml(str){
+  return String(str).replace(/[&<>'"]/g, function(s){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','\'':'&#39;','"':'&quot;'})[s]; });
+}
+
+/* quick add placeholder project/post for demo */
+document.getElementById('addProjectBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  const id = 'proj-'+(projectsData.length+1);
+  projectsData.push({id,title:'New Project '+(projectsData.length+1),description:'Describe this project here',url:'#'});
+  renderProjects();
+});
+document.getElementById('addPostBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  const id = 'post-'+(blogData.length+1);
+  blogData.unshift({id,title:'New Post '+(blogData.length+1),excerpt:'Short excerpt',content:'Full content here',date:new Date().toISOString().slice(0,10)});
+  renderBlog();
+});
+
+/* small helper to scroll to section */
+function scrollToSection(e, id){
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* render initially hidden dashboard if terminal skipped */
+if(window.location.hash === '#skipintro'){
+  revealDashboard();
+}
+</script>
+</body>
+</html>
