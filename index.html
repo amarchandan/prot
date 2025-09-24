@@ -1,117 +1,210 @@
 <!DOCTYPE html>
 <html lang="en-US">
-<head>
-  <meta charset="utf-8" />
-  <title>Amar Portfolio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <head>
+    <meta charset="utf-8" />
+    <title>Amar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: monospace;
-      background: #0d1117;
-      color: #fff;
-    }
-    .terminal {
-      width: 320px;
-      margin: 100px auto;
-      background: #001f1f;
-      padding: 15px;
-      border-radius: 6px;
-      border: 1px solid #0ff;
-      box-shadow: 0 0 10px rgba(0,255,255,0.4);
-    }
-    .terminal-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #0ff;
-      font-size: 14px;
-    }
-    .terminal-body {
-      font-size: 13px;
-      min-height: 80px;
-      white-space: pre-wrap;
-    }
-    .cards-container {
-      display: none;
-      text-align: center;
-      margin-top: 50px;
-    }
-    .card {
-      display: inline-block;
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 10px;
-      width: 250px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.2);
-    }
-    .card h2 {
-      margin-top: 0;
-      color: #0ff;
-    }
-  </style>
-</head>
-<body>
-  <!-- Terminal -->
-  <div class="terminal" id="terminal">
-    <div class="terminal-header">TERMINAL</div>
-    <div class="terminal-body" id="terminal-body"></div>
-  </div>
-
-  <!-- Cards -->
-  <div class="cards-container" id="cards">
-    <div class="card">
-      <h2>Profile</h2>
-      <p>Name: Amar</p>
-      <p>Profession: Student</p>
-    </div>
-    <div class="card">
-      <h2>Skills</h2>
-      <ul>
-        <li>Web Development</li>
-        <li>Cloud</li>
-        <li>Cybersecurity</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h2>Languages</h2>
-      <p>C, C++, Python, Rust</p>
-    </div>
-  </div>
-
-  <script>
-    const terminalBody = document.getElementById("terminal-body");
-    const terminal = document.getElementById("terminal");
-    const cards = document.getElementById("cards");
-
-    const lines = [
-      "load profile -firstName Amar -lastName Chandan",
-      "loading data...",
-      "fetching skills...",
-      "fetching languages...",
-      "initializing UI..."
-    ];
-
-    let i = 0;
-    function typeLine() {
-      if (i < lines.length) {
-        const line = document.createElement("div");
-        line.textContent = "> " + lines[i];
-        terminalBody.appendChild(line);
-        i++;
-        setTimeout(typeLine, 800);
-      } else {
-        setTimeout(() => {
-          terminal.style.display = "none";
-          cards.style.display = "block";
-        }, 1000);
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: black;
+        font-family: "Courier New", monospace;
       }
-    }
 
-    // Start typing
-    typeLine();
-  </script>
-</body>
+      /* Matrix background canvas */
+      #matrix {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+
+      /* Terminal box */
+      .terminal-wrapper {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+
+      .slick-terminal {
+        background: rgba(0, 0, 0, 0.7);
+        border: 1px solid #00ff99;
+        box-shadow: 0 0 15px #00ff99;
+        height: 300px;
+        width: 400px;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        color: #00ff99;
+      }
+
+      .slick-terminal-line {
+        margin-bottom: 2px;
+      }
+      .slick-terminal-caret {
+        color: #00ff99;
+        margin-right: 5px;
+      }
+      .slick-terminal-text {
+        color: #00ff99;
+      }
+      .slick-terminal-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 16px;
+        background: #00ff99;
+        margin-left: 5px;
+        animation: blink 1s infinite;
+      }
+      @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+
+      /* Cards container (hidden initially) */
+      .cards-container {
+        display: none;
+        position: relative;
+        z-index: 2;
+        padding: 40px;
+        text-align: center;
+        color: white;
+      }
+
+      .card {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #00ff99;
+        box-shadow: 0 0 10px #00ff99;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        width: 200px;
+        color: #00ff99;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Matrix background -->
+    <canvas id="matrix"></canvas>
+
+    <!-- Terminal -->
+    <div class="terminal-wrapper">
+      <div class="slick-terminal" id="terminal"></div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-container" id="cards">
+      <div class="card">About Me</div>
+      <div class="card">Projects</div>
+      <div class="card">Contact</div>
+    </div>
+
+    <script>
+      /* ===== Matrix Rain Effect ===== */
+      const canvas = document.getElementById("matrix");
+      const ctx = canvas.getContext("2d");
+
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+
+      const letters = "01";
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = [];
+      for (let x = 0; x < columns; x++) drops[x] = 1;
+
+      function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#00ff99";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = letters[Math.floor(Math.random() * letters.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+      setInterval(draw, 33);
+
+      /* ===== Terminal Typing Effect ===== */
+      function Terminal(options) {
+        let self = this;
+        this.container = options.container;
+        this.commands = options.commands;
+        this.lineCount = 0;
+        this.typingSpeed = options.typingSpeed || 100;
+        this.pause = options.pause || 500;
+        this.done = options.done;
+
+        this.newLine = function () {
+          const command = self.commands[self.lineCount];
+          if (!command) return;
+
+          const line = document.createElement("div");
+          line.classList.add("slick-terminal-line");
+          line.innerHTML =
+            '<span class="slick-terminal-caret">></span><span class="slick-terminal-text"></span><span class="slick-terminal-cursor"></span>';
+          self.container.appendChild(line);
+
+          const textEl = line.querySelector(".slick-terminal-text");
+          const cursor = line.querySelector(".slick-terminal-cursor");
+
+          setTimeout(() => {
+            let i = 0;
+            let typing = setInterval(() => {
+              textEl.textContent += command.text[i];
+              i++;
+              if (i >= command.text.length) {
+                clearInterval(typing);
+                cursor.remove();
+                self.lineCount++;
+                if (self.lineCount < self.commands.length) {
+                  self.newLine();
+                } else if (self.done) {
+                  self.done();
+                }
+              }
+            }, self.typingSpeed);
+          }, self.pause);
+        };
+
+        this.newLine();
+      }
+
+      const terminalEl = document.getElementById("terminal");
+      const cardsContainer = document.getElementById("cards");
+      const terminalWrapper = document.querySelector(".terminal-wrapper");
+
+      new Terminal({
+        container: terminalEl,
+        commands: [
+          { text: "Loading data..." },
+          { text: "Establishing secure connection..." },
+          { text: "Access granted." },
+        ],
+        typingSpeed: 80,
+        pause: 800,
+        done: function () {
+          setTimeout(() => {
+            terminalWrapper.style.display = "none";
+            cardsContainer.style.display = "block";
+          }, 1000);
+        },
+      });
+    </script>
+  </body>
 </html>
