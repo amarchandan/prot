@@ -1,103 +1,76 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Amar Portfolio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="terminal.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
     body {
       margin: 0;
+      background: url("bg.jpg") no-repeat center center fixed;
+      background-size: cover;
       font-family: monospace;
-      background: #0d1117;
       color: #fff;
     }
-    .terminal {
-      width: 320px;
-      margin: 100px auto;
-      background: #001f1f;
-      padding: 15px;
-      border-radius: 6px;
-      border: 1px solid #0ff;
-      box-shadow: 0 0 10px rgba(0,255,255,0.4);
-    }
-    .terminal-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #0ff;
-      font-size: 14px;
-    }
-    .terminal-body {
-      font-size: 13px;
-      min-height: 80px;
-      white-space: pre-wrap;
-    }
     .cards-container {
-      display: none;
-      text-align: center;
-      margin-top: 50px;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      position: relative;
+    }
+    .cards-container.loaded {
+      visibility: visible;
+      opacity: 1;
     }
     .card {
-      display: inline-block;
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 10px;
-      width: 250px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.2);
-    }
-    .card h2 {
-      margin-top: 0;
-      color: #0ff;
-    }
-    .ip-box {
-      margin: 30px auto;
-      width: 320px;
-      background: #111;
+      position: absolute;
+      background: rgba(0,0,0,0.7);
       border: 1px solid #0ff;
       border-radius: 8px;
-      padding: 15px;
-      font-size: 13px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.4);
-      text-align: left;
+      padding: 10px;
+      color: #fff;
     }
-    .ip-box h3 {
-      margin-top: 0;
-      color: #0ff;
-      font-size: 14px;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
       border-bottom: 1px solid #0ff;
-      padding-bottom: 5px;
+      margin-bottom: 6px;
+    }
+    .terminal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 200px;
+      background: #002b36;
+      color: #0f0;
+      padding: 10px;
+      border: 1px solid #0ff;
+    }
+    .ip-box {
+      background: rgba(0,0,0,0.8);
+      border: 1px solid #67B6B9;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
+
   <!-- Terminal -->
-  <div class="terminal" id="terminal">
-    <div class="terminal-header">TERMINAL</div>
-    <div class="terminal-body" id="terminal-body"></div>
+  <div class="terminal">
+    <div class="card-header"><strong>TERMINAL</strong></div>
+    <div class="card-body"></div>
   </div>
 
-  <!-- Cards -->
-  <div class="cards-container" id="cards">
-    <div class="card">
-      <h2>Profile</h2>
-      <p>Name: Amar</p>
-      <p>Profession: Student</p>
-    </div>
-    <div class="card">
-      <h2>Skills</h2>
-      <ul>
-        <li>Web Development</li>
-        <li>Cloud</li>
-        <li>Cybersecurity</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h2>Languages</h2>
-      <p>C, C++, Python, Rust</p>
-    </div>
-  </div>
+  <!-- Cards Container -->
+  <div class="cards-container"></div>
 
   <!-- IP Box -->
   <div class="ip-box" id="ip-box" style="display:none;">
@@ -105,59 +78,106 @@
     <div id="ip-data">Fetching IP details...</div>
   </div>
 
-  <script>
-    const terminalBody = document.getElementById("terminal-body");
-    const terminal = document.getElementById("terminal");
-    const cards = document.getElementById("cards");
-    const ipBox = document.getElementById("ip-box");
-    const ipData = document.getElementById("ip-data");
-
-    const lines = [
-      "load profile -firstName Amar -lastName Chandan",
-      "loading data...",
-      "fetching skills...",
-      "fetching languages...",
-      "initializing UI..."
-    ];
-
-    let i = 0;
-    function typeLine() {
-      if (i < lines.length) {
-        const line = document.createElement("div");
-        line.textContent = "> " + lines[i];
-        terminalBody.appendChild(line);
-        i++;
-        setTimeout(typeLine, 800);
-      } else {
-        setTimeout(() => {
-          terminal.style.display = "none";
-          cards.style.display = "block";
-          ipBox.style.display = "block";
-          fetchIP();
-        }, 1000);
-      }
+<script>
+  // Cards data
+  var cards = [
+    {
+      title: "Profile",
+      width: 300,
+      html: `
+        <table>
+          <tbody>
+            <tr><td>Name</td><td>Amar Chandan</td></tr>
+            <tr><td>Profession</td><td>Student</td></tr>
+            <tr><td>Contact</td>
+              <td>
+                <a href="mailto:amarchandan@outlook.com"><i class="fas fa-envelope"></i></a>
+                <a href="https://www.linkedin.com/in/theamarchandan"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://x.com/theamarchandan"><i class="fab fa-twitter"></i></a>
+                <a href="https://github.com/amarchandan" target="_blank"><i class="fab fa-github"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      `
+    },
+    {
+      title: "Skillset",
+      width: 300,
+      html: `
+        <ul>
+          <li>Web Development</li>
+          <li>Cloud Computing</li>
+          <li>Linux & Scripting</li>
+          <li>Cybersecurity</li>
+          <li>DevOps - Git / GitHub / Azure / AWS</li>
+        </ul>
+      `
     }
+  ];
 
-    // Fetch IP info
-    function fetchIP() {
-      fetch("https://ipapi.co/json/")
-        .then((res) => res.json())
-        .then((data) => {
-          ipData.innerHTML = `
-            <strong>IP:</strong> ${data.ip} <br>
-            <strong>City:</strong> ${data.city} <br>
-            <strong>Region:</strong> ${data.region} <br>
-            <strong>Country:</strong> ${data.country_name} <br>
-            <strong>ISP:</strong> ${data.org}
-          `;
-        })
-        .catch(() => {
-          ipData.textContent = "Failed to fetch IP details.";
-        });
-    }
+  var highZ = cards.length + 1;
+  var cardsContainer = document.querySelector(".cards-container");
 
-    // Start typing effect
-    typeLine();
-  </script>
+  // Render Cards
+  cards.forEach(function (card, i) {
+    var cardClass = card.title.toLowerCase().replace(/ /g, "-");
+    var cardStyles = `width: ${card.width}px; top:${80 + i*50}px; left:${50 + i*50}px;`;
+
+    cardsContainer.innerHTML += `
+      <div class="card ${cardClass}" style="${cardStyles}" tabindex="0" data-card="${cardClass}">
+        <div class="card-header">
+          <div class="card-title"><h2>${card.title}</h2></div>
+        </div>
+        <div class="card-body">${card.html}</div>
+      </div>
+    `;
+  });
+
+  // Terminal Animation
+  var terminalWrap = document.querySelector(".terminal");
+  var terminalContainer = document.querySelector(".terminal .card-body");
+
+  new Terminal({
+    container: terminalContainer,
+    typingSpeed: 75,
+    commands: [
+      { text: 'load profile -firstName "Amar" -lastName "Chandan"', typing: true },
+      { text: "loading...", typing: false }
+    ],
+    done: function () {
+      setTimeout(function () {
+        terminalWrap.style.display = "none";
+        cardsContainer.style.visibility = "visible";
+        cardsContainer.classList.add("loaded");
+        document.getElementById("ip-box").style.display = "block";
+      }, 1000);
+    },
+  });
+
+  // Fetch IP
+  const ipBox = document.getElementById("ip-box");
+  const ipData = document.getElementById("ip-data");
+
+  function fetchIP() {
+    fetch("https://ipapi.co/json/")
+      .then((res) => res.json())
+      .then((data) => {
+        ipData.innerHTML = `
+          <strong>IP:</strong> ${data.ip || "N/A"} <br>
+          <strong>City:</strong> ${data.city || "N/A"} <br>
+          <strong>Region:</strong> ${data.region || "N/A"} <br>
+          <strong>Country:</strong> ${data.country_name || "N/A"} <br>
+          <strong>ISP:</strong> ${data.org || "N/A"}
+        `;
+      })
+      .catch((err) => {
+        console.error("IP Fetch Error:", err);
+        ipData.textContent = "Failed to fetch IP details.";
+      });
+  }
+
+  fetchIP();
+</script>
 </body>
 </html>
