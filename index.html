@@ -5,6 +5,16 @@
     <title>Amar</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="/css/styles.min.css" />
+
     <style>
       body, html {
         margin: 0;
@@ -15,7 +25,7 @@
         font-family: "Courier New", monospace;
       }
 
-      /* Matrix background canvas */
+      /* Matrix background */
       #matrix {
         position: fixed;
         top: 0;
@@ -29,7 +39,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1;
+        z-index: 2;
       }
 
       .slick-terminal {
@@ -67,27 +77,9 @@
         51%, 100% { opacity: 0; }
       }
 
-      /* Cards container (hidden initially) */
-      .cards-container {
+      /* Hide old site initially */
+      .site-content {
         display: none;
-        position: relative;
-        z-index: 2;
-        padding: 40px;
-        text-align: center;
-        color: white;
-      }
-
-      .card {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid #00ff99;
-        box-shadow: 0 0 10px #00ff99;
-        padding: 20px;
-        margin: 10px;
-        border-radius: 10px;
-        width: 200px;
-        color: #00ff99;
-        font-weight: bold;
       }
     </style>
   </head>
@@ -100,15 +92,25 @@
       <div class="slick-terminal" id="terminal"></div>
     </div>
 
-    <!-- Cards -->
-    <div class="cards-container" id="cards">
-      <div class="card">About Me</div>
-      <div class="card">Projects</div>
-      <div class="card">Contact</div>
+    <!-- Old site content (hidden initially) -->
+    <div class="site-content">
+      <div class="world-map"></div>
+      <div class="video-background">
+        <video autoplay muted loop>
+          <source src="/images/background.webm" type="video/webm" />
+        </video>
+      </div>
+
+      <div class="card terminal">
+        <div class="card-header">Terminal</div>
+        <div class="card-body"></div>
+      </div>
+
+      <div class="cards-container"></div>
     </div>
 
+    <!-- Matrix Rain Script -->
     <script>
-      /* ===== Matrix Rain Effect ===== */
       const canvas = document.getElementById("matrix");
       const ctx = canvas.getContext("2d");
 
@@ -139,8 +141,10 @@
         }
       }
       setInterval(draw, 33);
+    </script>
 
-      /* ===== Terminal Typing Effect ===== */
+    <!-- Terminal Typing -->
+    <script>
       function Terminal(options) {
         let self = this;
         this.container = options.container;
@@ -186,25 +190,32 @@
       }
 
       const terminalEl = document.getElementById("terminal");
-      const cardsContainer = document.getElementById("cards");
       const terminalWrapper = document.querySelector(".terminal-wrapper");
+      const siteContent = document.querySelector(".site-content");
 
       new Terminal({
         container: terminalEl,
         commands: [
           { text: "Loading data..." },
-          { text: "Establishing secure connection..." },
+          { text: "Initializing system..." },
           { text: "Access granted." },
         ],
         typingSpeed: 80,
         pause: 800,
         done: function () {
           setTimeout(() => {
-            terminalWrapper.style.display = "none";
-            cardsContainer.style.display = "block";
+            terminalWrapper.style.display = "none"; // hide hacker terminal
+            document.getElementById("matrix").style.display = "none"; // hide matrix bg
+            siteContent.style.display = "block"; // show old site
           }, 1000);
         },
       });
     </script>
+
+    <!-- Your old JS files -->
+    <script src="/js/ua-parser.min.js"></script>
+    <script src="/js/analytics.min.js"></script>
+    <script src="/js/terminal.min.js"></script>
+    <script src="/js/app.min.js"></script>
   </body>
 </html>
