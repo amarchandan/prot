@@ -11,28 +11,15 @@
       font-family: monospace;
       background: #0d1117;
       color: #fff;
-      overflow: hidden;
     }
-
-    /* Matrix canvas */
-    #matrix {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
-
-    /* Terminal */
     .terminal {
       width: 320px;
       margin: 100px auto;
-      background: rgba(0, 31, 31, 0.8);
+      background: #001f1f;
       padding: 15px;
       border-radius: 6px;
       border: 1px solid #0ff;
-      box-shadow: 0 0 15px rgba(0,255,255,0.6);
-      z-index: 1;
-      position: relative;
+      box-shadow: 0 0 10px rgba(0,255,255,0.4);
     }
     .terminal-header {
       font-weight: bold;
@@ -45,24 +32,20 @@
       min-height: 80px;
       white-space: pre-wrap;
     }
-
-    /* Cards */
     .cards-container {
       display: none;
       text-align: center;
       margin-top: 50px;
-      position: relative;
-      z-index: 1;
     }
     .card {
       display: inline-block;
-      background: rgba(17, 17, 17, 0.85);
+      background: #111;
       border: 1px solid #444;
       border-radius: 8px;
       padding: 20px;
       margin: 10px;
       width: 250px;
-      box-shadow: 0 0 15px rgba(0,255,255,0.3);
+      box-shadow: 0 0 10px rgba(0,255,255,0.2);
     }
     .card h2 {
       margin-top: 0;
@@ -71,9 +54,6 @@
   </style>
 </head>
 <body>
-  <!-- Matrix Background -->
-  <canvas id="matrix"></canvas>
-
   <!-- Terminal -->
   <div class="terminal" id="terminal">
     <div class="terminal-header">TERMINAL</div>
@@ -101,40 +81,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script>
-    // Matrix Effect
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
-
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-
-    const letters = "01";
-    const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-
-    function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#0ff";
-      ctx.font = fontSize + "px monospace";
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    }
-    setInterval(draw, 35);
-
-    // Terminal Typing
     const terminalBody = document.getElementById("terminal-body");
     const terminal = document.getElementById("terminal");
     const cards = document.getElementById("cards");
