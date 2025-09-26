@@ -2,116 +2,180 @@
 <html lang="en-US">
 <head>
   <meta charset="utf-8" />
-  <title>Amar Portfolio</title>
+  <title>root@amar:~$ whoami</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
-    body {
-      margin: 0;
-      font-family: monospace;
-      background: #0d1117;
-      color: #fff;
-    }
-    .terminal {
-      width: 320px;
-      margin: 100px auto;
-      background: #001f1f;
-      padding: 15px;
-      border-radius: 6px;
-      border: 1px solid #0ff;
-      box-shadow: 0 0 10px rgba(0,255,255,0.4);
-    }
-    .terminal-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #0ff;
-      font-size: 14px;
-    }
-    .terminal-body {
-      font-size: 13px;
-      min-height: 80px;
-      white-space: pre-wrap;
-    }
-    .cards-container {
-      display: none;
-      text-align: center;
-      margin-top: 50px;
-    }
-    .card {
-      display: inline-block;
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 10px;
-      width: 250px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.2);
-    }
-    .card h2 {
-      margin-top: 0;
-      color: #0ff;
-    }
+    /* ---------- SAME BASE STYLES (NO CHANGE) ---------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; background: #000; color: #00ff00; min-height: 100vh; overflow-x: hidden; cursor: crosshair; }
+    .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -2; opacity: 0.1; }
+    .matrix-column { position: absolute; top: -100px; font-size: 14px; color: #00ff00; white-space: nowrap; animation: matrix-fall linear infinite; }
+    @keyframes matrix-fall { to { transform: translateY(100vh); } }
+    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%); background-size: 100% 4px; animation: scanlines 0.1s linear infinite; }
+    @keyframes scanlines { 0% { background-position: 0 0; } 100% { background-position: 0 4px; } }
+    .terminal { width: min(95vw, 800px); margin: 20px auto; background: rgba(0, 0, 0, 0.95); border: 2px solid #00ff00; }
+    .terminal-header { background: rgba(0, 255, 0, 0.1); padding: 10px 20px; border-bottom: 1px solid #00ff00; font-size: 12px; display: flex; align-items: center; gap: 10px; }
+    .terminal-body { padding: 20px; font-size: 13px; min-height: 300px; }
+    .terminal-line { margin-bottom: 5px; opacity: 0; transform: translateX(-20px); animation: slideIn 0.3s ease-out forwards; }
+    @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+    .cursor { display: inline-block; width: 8px; height: 16px; background: #00ff00; animation: blink 1s infinite; margin-left: 2px; }
+    @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0;} }
+    .prompt { color: #ff6b6b; } .command { color: #4ecdc4; } .output { color: #00ff00; }
+    .dashboard { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+    .module { background: rgba(0, 0, 0, 0.9); border: 1px solid #00ff00; padding: 20px; opacity: 0; transform: translateY(50px); transition: all 0.3s ease; }
+    .module.active { opacity: 1; transform: translateY(0); }
+    .module-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(0,255,0,0.3); }
+    .skill-bar { background: rgba(0,255,0,0.1); height: 4px; margin: 8px 0; }
+    .skill-progress { height: 100%; background: linear-gradient(90deg, #00ff00, #4ecdc4); width: 0; animation: fillBar 2s forwards; }
+    @keyframes fillBar { to { width: var(--width); } }
+    .ascii-art { font-size: 8px; line-height: 1; text-align: center; color: #4ecdc4; }
   </style>
 </head>
 <body>
+  <!-- Matrix -->
+  <div class="matrix-bg" id="matrix"></div>
+  <div class="scanlines"></div>
+
   <!-- Terminal -->
   <div class="terminal" id="terminal">
-    <div class="terminal-header">TERMINAL</div>
+    <div class="terminal-header"><div class="terminal-title">root@amar-dev:~#</div></div>
     <div class="terminal-body" id="terminal-body"></div>
   </div>
 
-  <!-- Cards -->
-  <div class="cards-container" id="cards">
-    <div class="card">
-      <h2>Profile</h2>
-      <p>Name: Amar</p>
-      <p>Profession: Student</p>
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- Profile -->
+    <div class="module">
+      <div class="module-header">👤 USER.PROFILE</div>
+      <div class="ascii-art">╔══════════╗<br/>║ USER ID ║<br/>║   #001  ║<br/>╚══════════╝</div>
+      <div class="code-block">{"name": "Amar Chandan","role": "Student | Developer","location": "India"}</div>
     </div>
-    <div class="card">
-      <h2>Skills</h2>
-      <ul>
-        <li>Web Development</li>
-        <li>Cloud</li>
-        <li>Cybersecurity</li>
-      </ul>
+
+    <!-- Skills -->
+    <div class="module">
+      <div class="module-header">⚡ SKILL.MATRIX</div>
+      <div>
+        <b>💻 PROGRAMMING.LANG</b><br/>
+        Python <div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div>
+        C/C++ <div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div>
+        Rust <div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div>
+        JavaScript <div class="skill-bar"><div class="skill-progress" style="--width:88%"></div></div>
+        Go <div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div>
+        Java <div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div><br/>
+
+        <b>🗄️ DATABASE.SYS</b><br/>
+        MySQL (85%), PostgreSQL (80%), MongoDB (75%), Redis (70%), SQLite (90%)<br/><br/>
+
+        <b>🐧 LINUX.DEVOPS</b><br/>
+        Linux Admin (92%), Docker (85%), Kubernetes (75%), AWS (80%), Shell Scripting (95%)<br/><br/>
+
+        <b>🔐 CYBERSEC.SKILLS</b><br/>
+        Pentesting (85%), Ethical Hacking (90%), Vuln. Assessment (88%), Malware Analysis (75%), Forensics (70%)<br/><br/>
+
+        <b>🌐 NETWORK.SKILLS</b><br/>
+        TCP/IP (95%), Network Analysis (90%), Wireshark (85%), Firewall Config (80%), VPN Setup (75%)
+      </div>
     </div>
-    <div class="card">
-      <h2>Languages</h2>
-      <p>C, C++, Python, Rust</p>
+
+    <!-- Projects -->
+    <div class="module">
+      <div class="module-header">📁 REPO.LIST</div>
+      <div class="code-block">
+        $ ls -la ~/projects/<br/>
+        drwx  web-scanner/<br/>
+        drwx  crypto-tool/<br/>
+        drwx  network-monitor/<br/>
+        drwx  api-fuzzer/<br/>
+        drwx  ml-classifier/<br/>
+        drwx  blockchain-poc/<br/>
+        drwx  pentesting-suite/<br/>
+        drwx  portfolio-site/<br/><br/>
+        <span class="warning">8 repositories active</span>
+      </div>
     </div>
+
+    <!-- Hobbies -->
+    <div class="module">
+      <div class="module-header">🎮 HOBBIES</div>
+      <div class="code-block">
+        - Competitive Programming<br/>
+        - Open Source Contributing<br/>
+        - CTF Challenges<br/>
+        - Linux Rice Customization<br/>
+        - Hardware Tinkering<br/>
+        - Gaming & Streaming<br/>
+        - Tech Blog Writing<br/>
+        - Electronics Projects
+      </div>
+    </div>
+
   </div>
 
   <script>
+    // Enhanced Matrix
+    function createMatrix() {
+      const matrix = document.getElementById('matrix');
+      matrix.innerHTML = '';
+      const chars = '01アイウエオカキクケコサシスセソナニヌネノハヒフホマミムメモ';
+      for (let i = 0; i < 60; i++) {
+        const col = document.createElement('div');
+        col.className = 'matrix-column';
+        col.style.left = Math.random() * 100 + '%';
+        col.style.animationDuration = (5 + Math.random() * 8) + 's';
+        col.style.animationDelay = Math.random() * 5 + 's';
+        let text = '';
+        for (let j = 0; j < 25; j++) text += chars[Math.floor(Math.random() * chars.length)];
+        col.textContent = text;
+        matrix.appendChild(col);
+      }
+    }
+    setInterval(createMatrix, 15000);
+
+    // Terminal simulation
     const terminalBody = document.getElementById("terminal-body");
+    const dashboard = document.getElementById("dashboard");
     const terminal = document.getElementById("terminal");
-    const cards = document.getElementById("cards");
-
-    const lines = [
-      "load profile -firstName Amar -lastName Chandan",
-      "loading data...",
-      "fetching skills...",
-      "fetching languages...",
-      "initializing UI..."
+    const commands = [
+      { cmd: "ssh root@amar-dev.local", type: "command" },
+      { cmd: "Password: ********", type: "prompt" },
+      { cmd: "Welcome to Amar's Dev Environment", type: "output" },
+      { cmd: "$ ./launch_dashboard.py", type: "command" },
+      { cmd: "[INIT] Loading modules...", type: "output" }
     ];
-
     let i = 0;
-    function typeLine() {
-      if (i < lines.length) {
+    function typeCommand() {
+      if (i < commands.length) {
         const line = document.createElement("div");
-        line.textContent = "> " + lines[i];
+        line.className = "terminal-line " + commands[i].type;
         terminalBody.appendChild(line);
-        i++;
-        setTimeout(typeLine, 800);
+        let text = commands[i].cmd, j = 0;
+        const typer = () => {
+          if (j < text.length) {
+            line.textContent = text.substring(0, ++j);
+            setTimeout(typer, 40);
+          } else { i++; setTimeout(typeCommand, 500); }
+        }; typer();
       } else {
         setTimeout(() => {
-          terminal.style.display = "none";
-          cards.style.display = "block";
+          terminal.style.opacity = "0.3";
+          dashboard.style.display = "grid";
+          document.querySelectorAll('.module').forEach((m, idx) => setTimeout(()=>m.classList.add('active'), idx*200));
         }, 1000);
       }
     }
 
-    // Start typing
-    typeLine();
+    // Init
+    createMatrix();
+    setTimeout(typeCommand, 1000);
+    setInterval(() => {
+      const cols = document.querySelectorAll('.matrix-column');
+      const chars = '01アイウエオカキクケコサシスセソナニヌネノハヒフホマミムメモ';
+      cols.forEach(col => {
+        let text = ''; for (let i = 0; i < 25; i++) text += chars[Math.floor(Math.random() * chars.length)];
+        col.textContent = text;
+      });
+    }, 200);
   </script>
 </body>
 </html>
