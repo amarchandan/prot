@@ -1,244 +1,296 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>root@amar:~$ whoami</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amar | Portfolio</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Courier New', monospace;
-      background: #000;
-      color: #00ff00;
-      min-height: 100vh;
-      overflow-x: hidden;
-      cursor: crosshair;
+      margin:0;
+      background:black;
+      color:#00ff00;
+      font-family:monospace;
+      overflow:hidden;
     }
-    /* Matrix rain */
-    .matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -2; opacity: 0.1; }
-    .matrix-column { position: absolute; top: -100px; font-size: 14px; color: #00ff00; white-space: nowrap; animation: matrix-fall linear infinite; }
-    @keyframes matrix-fall { to { transform: translateY(100vh); } }
-    /* Scanlines */
-    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;
-      background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
-      background-size: 100% 4px; animation: scanlines 0.1s linear infinite; }
-    @keyframes scanlines { 0% { background-position: 0 0; } 100% { background-position: 0 4px; } }
+    /* Matrix background */
+    #matrix {
+      position:fixed;
+      top:0;left:0;width:100%;height:100%;
+      background:black;
+      overflow:hidden;
+      z-index:0;
+    }
+    .matrix-column {
+      position:absolute;
+      top:0;
+      writing-mode:vertical-rl;
+      text-orientation:upright;
+      font-size:14px;
+      color:#00ff00;
+      opacity:0.7;
+      animation:fall linear infinite;
+    }
+    @keyframes fall {
+      from { transform: translateY(-100%);}
+      to { transform: translateY(100vh);}
+    }
+
     /* Terminal */
-    .terminal { width: min(95vw, 800px); margin: 20px auto; background: rgba(0,0,0,0.95); border: 2px solid #00ff00; box-shadow: 0 0 30px rgba(0,255,0,0.5); }
-    .terminal-header { background: rgba(0,255,0,0.1); padding: 10px 20px; border-bottom: 1px solid #00ff00; font-size: 12px; display: flex; align-items: center; gap: 10px; }
-    .terminal-buttons { display: flex; gap: 5px; }
-    .btn { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #00ff00; }
-    .btn.close { background: #ff0000; } .btn.minimize { background: #ffff00; } .btn.maximize { background: #00ff00; }
-    .terminal-title { flex: 1; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-    .terminal-body { padding: 20px; font-size: 13px; min-height: 300px; background: rgba(0,0,0,0.8); }
-    .terminal-line { margin-bottom: 5px; }
-    .cursor { display: inline-block; width: 8px; height: 16px; background: #00ff00; animation: blink 1s infinite; margin-left: 2px; }
-    @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0;} }
-    .prompt { color: #ff6b6b; } .command { color: #4ecdc4; } .output { color: #00ff00; }
+    #terminal {
+      position:relative;
+      z-index:1;
+      background:rgba(0,0,0,0.8);
+      border:1px solid #00ff00;
+      width:80%;
+      height:60vh;
+      margin:5vh auto;
+      padding:10px;
+      overflow-y:auto;
+    }
+    .terminal-line { margin:2px 0; }
+    .prompt { color:#0f0; }
+    input { background:transparent; border:none; outline:none; color:#0f0; }
+
     /* Dashboard */
-    .dashboard { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; grid-template-columns: repeat(auto-fit,minmax(350px,1fr)); gap: 20px; }
-    .module { background: rgba(0,0,0,0.9); border: 1px solid #00ff00; padding: 20px; opacity: 0; transform: translateY(50px); transition: all 0.5s; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
-    .module.active { opacity: 1; transform: translateY(0); }
-    .module-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(0,255,0,0.3); padding-bottom: 5px; }
-    .module-title { color: #00ff00; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; flex: 1; }
-    .status-indicator { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-    .code-block { background: rgba(0,50,0,0.3); border-left: 3px solid #00ff00; padding: 10px; font-size: 12px; margin: 10px 0; overflow-x: auto; }
-    .skill-bar { background: rgba(0,255,0,0.1); height: 4px; margin: 6px 0; }
-    .skill-progress { height: 100%; background: linear-gradient(90deg,#00ff00,#4ecdc4); width: 0; animation: fillBar 2s forwards; }
-    @keyframes fillBar { to { width: var(--width);} }
-    /* Traffic graph */
-    .traffic-graph { display: flex; align-items: end; height: 60px; margin: 10px 0; background: rgba(0,255,0,0.05); }
-    .traffic-bar { width: 20px; margin: 0 2px; background: linear-gradient(to top,#00ff00,#4ecdc4); height: var(--height); }
-    .traffic-stats { font-size: 12px; display: flex; justify-content: space-between; }
-    /* Responsive */
-    @media(max-width:768px){.dashboard{grid-template-columns:1fr;}}
+    #dashboard {
+      display:none;
+      position:relative;
+      z-index:2;
+      width:95%;
+      margin:20px auto;
+      padding:10px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      grid-gap:15px;
+    }
+    .module {
+      background:rgba(0,0,0,0.8);
+      border:1px solid #00ff00;
+      border-radius:8px;
+      padding:10px;
+      opacity:0;
+      transform:scale(0.95);
+      transition:all 0.3s ease;
+    }
+    .module.active { opacity:1; transform:scale(1); }
+    .module-header {
+      display:flex;justify-content:space-between;align-items:center;
+      border-bottom:1px solid #00ff00;
+      padding-bottom:5px;margin-bottom:5px;
+    }
+    .status-indicator {
+      width:10px;height:10px;border-radius:50%;
+      background:#0f0;animation:blink 1s infinite alternate;
+    }
+    @keyframes blink { from{opacity:1;} to{opacity:0.2;} }
+    .code-block {
+      background:rgba(0,0,0,0.6);
+      padding:5px;
+      font-size:14px;
+      overflow:auto;
+    }
+
+    /* NET.TRAFFIC bars */
+    .traffic-bar {
+      display:inline-block;
+      width:8px;
+      margin:0 2px;
+      background:#00ff00;
+      height:50px;
+      transition:height 0.3s ease;
+    }
+
+    /* Contact module links */
+    .module a {
+      color:#4ecdc4;
+      text-decoration:none;
+      transition:all 0.2s ease;
+    }
+    .module a:hover {
+      color:#ff6b6b;
+      text-shadow:0 0 10px #ff6b6b;
+    }
   </style>
 </head>
 <body>
-  <div class="matrix-bg" id="matrix"></div>
-  <div class="scanlines"></div>
+
+  <div id="matrix"></div>
 
   <!-- Terminal -->
-  <div class="terminal" id="terminal">
-    <div class="terminal-header">
-      <div class="terminal-buttons">
-        <div class="btn close"></div><div class="btn minimize"></div><div class="btn maximize"></div>
-      </div>
-      <div class="terminal-title">root@amar-dev:~#</div>
-    </div>
-    <div class="terminal-body" id="terminal-body"></div>
+  <div id="terminal">
+    <div id="terminal-body"></div>
   </div>
 
   <!-- Dashboard -->
-  <div class="dashboard" id="dashboard">
-    
-    <!-- Profile -->
+  <div id="dashboard">
+
+    <!-- SEC.MONITOR -->
     <div class="module">
-      <div class="module-header"><span>👤</span><span class="module-title">USER.PROFILE</span><div class="status-indicator"></div></div>
-      <div class="code-block">
-{<br/> "name":"Amar Chandan",<br/> "role":"Software Engineer | Cybersec Enthusiast",<br/> "location":"India",<br/> "status":"ACTIVE"<br/>}
+      <div class="module-header">
+        <span class="module-title">SEC.MONITOR</span>
+        <div class="status-indicator"></div>
       </div>
-    </div>
-
-    <!-- Skills -->
-    <div class="module">
-      <div class="module-header"><span>⚡</span><span class="module-title">PROGRAMMING.LANG</span><div class="status-indicator"></div></div>
-      <div>Python<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-      <div>C/C++<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-      <div>Rust<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-      <div>JavaScript<div class="skill-bar"><div class="skill-progress" style="--width:88%"></div></div></div>
-      <div>Go<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-      <div>Java<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-    </div>
-
-    <div class="module">
-      <div class="module-header"><span>🗄️</span><span class="module-title">DATABASE.SYS</span><div class="status-indicator"></div></div>
-      <div>MySQL<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-      <div>PostgreSQL<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-      <div>MongoDB<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-      <div>Redis<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-      <div>SQLite<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-    </div>
-
-    <div class="module">
-      <div class="module-header"><span>🐧</span><span class="module-title">LINUX.DEVOPS</span><div class="status-indicator"></div></div>
-      <div>Linux Admin<div class="skill-bar"><div class="skill-progress" style="--width:92%"></div></div></div>
-      <div>Docker<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-      <div>Kubernetes<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-      <div>AWS<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-      <div>Shell Scripting<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-    </div>
-
-    <div class="module">
-      <div class="module-header"><span>🔐</span><span class="module-title">CYBERSEC.SKILLS</span><div class="status-indicator"></div></div>
-      <div>Penetration Testing<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-      <div>Ethical Hacking<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-      <div>Vulnerability Assessment<div class="skill-bar"><div class="skill-progress" style="--width:88%"></div></div></div>
-      <div>Malware Analysis<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-      <div>Digital Forensics<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-    </div>
-
-    <div class="module">
-      <div class="module-header"><span>🌐</span><span class="module-title">NETWORK.SKILLS</span><div class="status-indicator"></div></div>
-      <div>Network Analysis<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-      <div>Wireshark<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-      <div>TCP/IP<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-      <div>Firewall Config<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-      <div>VPN Setup<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-    </div>
-
-    <!-- Hobbies -->
-    <div class="module">
-      <div class="module-header"><span>🎮</span><span class="module-title">HOBBIES</span><div class="status-indicator"></div></div>
       <div class="code-block">
-- Competitive Programming<br/>
-- Open Source Contributing<br/>
-- CTF Challenges<br/>
-- Linux Rice Customization<br/>
-- Hardware Tinkering<br/>
-- Gaming & Streaming<br/>
-- Tech Blog Writing<br/>
-- Electronics Projects
-      </div>
-    </div>
-
-    <!-- Projects -->
-    <div class="module">
-      <div class="module-header"><span>📁</span><span class="module-title">REPO.LIST</span><div class="status-indicator"></div></div>
-      <div class="code-block">
-$ ls -la ~/projects/<br/>
-web-scanner/<br/>crypto-tool/<br/>network-monitor/<br/>api-fuzzer/<br/>
-ml-classifier/<br/>blockchain-poc/<br/>pentesting-suite/<br/>portfolio-site/<br/><br/>
-<span>8 repositories active</span>
+        <p>[OK] Firewall Active</p>
+        <p>[OK] IDS Running</p>
+        <p>[WARN] Suspicious Traffic Detected</p>
+        <p>[OK] System Integrity Verified</p>
       </div>
     </div>
 
     <!-- NET.TRAFFIC -->
     <div class="module">
-      <div class="module-header"><span>📡</span><span class="module-title">NET.TRAFFIC</span><div class="status-indicator"></div></div>
-      <div class="traffic-graph">
-        <div class="traffic-bar" style="--height:40%"></div>
-        <div class="traffic-bar" style="--height:60%"></div>
-        <div class="traffic-bar" style="--height:80%"></div>
-        <div class="traffic-bar" style="--height:50%"></div>
+      <div class="module-header">
+        <span class="module-title">NET.TRAFFIC</span>
+        <div class="status-indicator"></div>
       </div>
-      <div class="traffic-stats"><span id="upload-speed">↑1.2MB/s</span><span id="download-speed">↓5.8MB/s</span></div>
+      <div class="code-block">
+        <div id="traffic-bars">
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+        </div>
+        <p id="upload-speed">↑0.0MB/s</p>
+        <p id="download-speed">↓0.0MB/s</p>
+      </div>
     </div>
 
-    <!-- SEC.MONITOR -->
+    <!-- CONTACT.MODULE -->
     <div class="module">
-      <div class="module-header"><span>🔒</span><span class="module-title">SEC.MONITOR</span><div class="status-indicator"></div></div>
+      <div class="module-header">
+        <span class="module-title">CONTACT.MODULE</span>
+        <div class="status-indicator"></div>
+      </div>
       <div class="code-block">
-[OK] SSH login successful<br/>
-[OK] Firewall rules updated<br/>
-[OK] SSL certificates valid<br/>
-[WARN] 3 failed login attempts<br/>
-All systems secure ✓
+        <p>📷 Instagram: <a href="https://instagram.com/yourusername" target="_blank">instagram.com/yourusername</a></p>
+        <p>✈️ Telegram: <a href="https://t.me/yourusername" target="_blank">t.me/yourusername</a></p>
+        <p>🎮 Discord: <a href="https://discord.gg/yourserver" target="_blank">discord.gg/yourserver</a></p>
+        <p>💼 LinkedIn: <a href="https://linkedin.com/in/yourusername" target="_blank">linkedin.com/in/yourusername</a></p>
+        <p>🐙 GitHub: <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a></p>
+        <p>📧 Email: <a href="mailto:youremail@example.com">youremail@example.com</a></p>
       </div>
     </div>
+
   </div>
 
   <script>
     // Matrix rain
     function createMatrix(){
       const matrix=document.getElementById('matrix');
-      const chars='01アイウエオカキクケコサシスセソ...ワヲン';
+      const chars='01アイウエオカキクケコサシスセソワヲン';
       matrix.innerHTML='';
       for(let i=0;i<60;i++){
         const col=document.createElement('div');
         col.className='matrix-column';
         col.style.left=Math.random()*100+'%';
         col.style.animationDuration=(5+Math.random()*10)+'s';
-        let text=''; for(let j=0;j<25;j++){ text+=chars[Math.floor(Math.random()*chars.length)]; }
-        col.textContent=text; matrix.appendChild(col);
+        let text='';
+        for(let j=0;j<25;j++){ text+=chars[Math.floor(Math.random()*chars.length)]; }
+        col.textContent=text;
+        matrix.appendChild(col);
       }
     }
     createMatrix(); setInterval(createMatrix,15000);
-    setInterval(()=>{
-      const cols=document.querySelectorAll('.matrix-column');
-      const rand=cols[Math.floor(Math.random()*cols.length)];
-      if(rand){ let text=''; const chars='01アイウエオカキクケコサシスセソ...ワヲン';
-        for(let j=0;j<25;j++){ text+=chars[Math.floor(Math.random()*chars.length)]; }
-        rand.textContent=text;
-      }
-    },200);
 
-    // Terminal typing
-    const terminalBody=document.getElementById("terminal-body");
+    // Terminal CLI
     const terminal=document.getElementById("terminal");
+    const terminalBody=document.getElementById("terminal-body");
     const dashboard=document.getElementById("dashboard");
-    const commands=[
-      {cmd:"ssh root@amar-dev.local",type:"command"},
-      {cmd:"Password: ********",type:"prompt"},
-      {cmd:"Welcome to Amar's Development Environment",type:"output"},
-      {cmd:"$ ./launch_dashboard.py",type:"command"}
-    ];
-    let i=0;
-    function typeCommand(){
-      if(i<commands.length){
-        const line=document.createElement("div");
-        line.className="terminal-line "+commands[i].type;
-        let text=commands[i].cmd,j=0;
-        const typeChar=()=>{
-          if(j<text.length){ line.textContent=text.substring(0,j+1); j++; setTimeout(typeChar,30); }
-          else{ terminalBody.appendChild(line); i++; setTimeout(typeCommand,500); }
-        };
-        terminalBody.appendChild(line); typeChar();
+
+    const commands = {
+      help: [
+        "Available commands:",
+        "about     -> Show profile info",
+        "skills    -> Show technical skills",
+        "projects  -> List projects",
+        "contact   -> Contact info",
+        "dashboard -> Launch GUI dashboard",
+        "clear     -> Clear the terminal"
+      ],
+      about: [
+        "Name: Amar Chandan",
+        "Role: Software Engineer | Cybersecurity Enthusiast",
+        "Location: India"
+      ],
+      skills: [
+        "Programming: Python, C/C++, Rust, Go, JS, Java",
+        "Databases: MySQL, PostgreSQL, MongoDB, Redis",
+        "DevOps: Linux, Docker, Kubernetes, AWS, Shell",
+        "CyberSec: Pentesting, VA, Malware Analysis, Forensics",
+        "Networking: TCP/IP, Wireshark, VPN, Firewall Config"
+      ],
+      projects: [
+        "1. Web Scanner        github.com/you/web-scanner",
+        "2. Crypto Tool        github.com/you/crypto-tool",
+        "3. Network Monitor    github.com/you/net-monitor",
+        "4. API Fuzzer         github.com/you/api-fuzzer",
+        "5. ML Classifier      github.com/you/ml-classifier",
+        "6. Blockchain PoC     github.com/you/blockchain-poc",
+        "7. Pentesting Suite   github.com/you/pentest-suite",
+        "8. Portfolio Site     github.com/you/portfolio"
+      ],
+      contact: [
+        "📷 Instagram: instagram.com/yourusername",
+        "✈️ Telegram: t.me/yourusername",
+        "🎮 Discord: discord.gg/yourserver",
+        "💼 LinkedIn: linkedin.com/in/yourusername",
+        "🐙 GitHub: github.com/yourusername",
+        "📧 Email: youremail@example.com"
+      ]
+    };
+
+    function printLine(text, type="output"){
+      const line=document.createElement("div");
+      line.className="terminal-line "+type;
+      line.textContent=text;
+      terminalBody.appendChild(line);
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    function handleCommand(cmd){
+      if(cmd==="clear"){
+        terminalBody.innerHTML="";
+        return;
+      }
+      if(cmd==="dashboard"){
+        terminal.style.display="none";
+        dashboard.style.display="grid";
+        document.querySelectorAll('.module').forEach((m,idx)=>{ 
+          setTimeout(()=>m.classList.add('active'),idx*150); 
+        });
+        return;
+      }
+      if(commands[cmd]){
+        commands[cmd].forEach(line=>printLine(line,"output"));
       } else {
-        setTimeout(()=>{
-          terminal.style.display="none";
-          dashboard.style.display="grid";
-          document.querySelectorAll('.module').forEach((m,idx)=>{ setTimeout(()=>m.classList.add('active'),idx*150); });
-        },1500);
+        printLine("Command not found: "+cmd,"output");
+        printLine("Type `help` for list of commands.","output");
       }
     }
-    setTimeout(typeCommand,1000);
 
-    // Traffic anim
+    // Input field
+    const inputForm=document.createElement("form");
+    inputForm.style.display="flex";
+    inputForm.innerHTML='<span class="prompt">root@amar-dev:~$ </span><input id="cmdInput" style="flex:1; background:black; border:none; color:#00ff00; outline:none;" autofocus />';
+    terminalBody.appendChild(inputForm);
+
+    const cmdInput=document.getElementById("cmdInput");
+    inputForm.addEventListener("submit",e=>{
+      e.preventDefault();
+      const value=cmdInput.value.trim();
+      if(value){
+        printLine("root@amar-dev:~$ "+value,"command");
+        handleCommand(value);
+        cmdInput.value="";
+      }
+    });
+
+    // NET.TRAFFIC animation
     setInterval(()=>{
       document.querySelectorAll('.traffic-bar').forEach(bar=>{
-        bar.style.setProperty('--height',(20+Math.random()*80)+'%');
+        bar.style.height=(20+Math.random()*80)+'px';
       });
       document.getElementById('upload-speed').textContent="↑"+(Math.random()*2+0.5).toFixed(1)+"MB/s";
       document.getElementById('download-speed').textContent="↓"+(Math.random()*8+2).toFixed(1)+"MB/s";
