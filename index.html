@@ -1,417 +1,277 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>root@amar:~$ whoami</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Amar's Portfolio</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family: 'Courier New', monospace;
-      background:#000;
-      color:#00ff00;
-      min-height:100vh;
-      overflow-x:hidden;
-      cursor:crosshair;
-    }
-
-    /* Matrix background */
-    .matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-2;opacity:0.09;overflow:hidden}
-    .matrix-column{position:absolute;top:-100px;font-size:14px;color:#00ff00;white-space:nowrap;animation:matrix-fall linear infinite;opacity:0.85}
-    @keyframes matrix-fall{to{transform:translateY(100vh)}}
-
-    /* Scanlines */
-    .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;background:linear-gradient(transparent 50%, rgba(0,255,0,0.03) 50%);background-size:100% 4px;animation:scanlines 0.1s linear infinite}
-    @keyframes scanlines{0%{background-position:0 0}100%{background-position:0 4px}}
-
-    /* Terminal (intro) */
-    .terminal {
-      width: min(95vw, 900px);
-      margin: 30px auto 16px auto;
-      background: rgba(0,0,0,0.95);
-      border: 2px solid #00ff00;
-      box-shadow: 0 0 30px rgba(0,255,0,0.15);
-      position: relative;
-      z-index: 2;
-      border-radius: 4px;
+    body {
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      margin: 0;
       overflow: hidden;
     }
-    .terminal-header{background:rgba(0,255,0,0.05);padding:10px 14px;border-bottom:1px solid rgba(0,255,0,0.06);display:flex;align-items:center;gap:10px}
-    .terminal-buttons{display:flex;gap:6px}
-    .btn{width:12px;height:12px;border-radius:50%;border:1px solid #00ff00}
-    .btn.close{background:#ff4b4b}.btn.min{background:#ffd24d}.btn.max{background:#4cff8a}
-    .terminal-title{flex:1;text-align:center;text-transform:uppercase;letter-spacing:2px;font-size:12px}
-    .terminal-body{padding:18px;font-size:13px;min-height:200px;white-space:pre-wrap;color:#bfffcf}
-
-    .terminal-line{opacity:0;transform:translateX(-18px);animation:slideIn .25s ease-out forwards}
-    @keyframes slideIn{to{opacity:1;transform:none}}
-    .cursor{display:inline-block;width:8px;height:16px;background:#00ff00;vertical-align:middle;margin-left:4px;animation:blink 1s steps(2) infinite}
-    @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
-
-    .prompt{color:#ff6b6b}
-    .command{color:#4ecdc4}
-    .output{color:#00ff00}
-    .warning{color:#ffd93d}
-    .error{color:#ff6b6b}
-
-    /* Dashboard */
-    .dashboard { display:none; z-index:3; width:95%; max-width:1400px; margin:12px auto 40px auto; display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap:18px; padding:10px; }
-    .module { background: rgba(0,0,0,0.92); border:1px solid #00ff00; padding:16px; border-radius:8px; box-shadow:0 0 20px rgba(0,255,0,0.04); transform: translateY(22px) scale(.99); opacity:0; transition: all .45s cubic-bezier(.2,.9,.2,1); min-height:120px; overflow:hidden; }
-    .module.active{ transform:none; opacity:1; }
-    .module-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;border-bottom:1px solid rgba(0,255,0,0.04);padding-bottom:8px}
-    .module-title{color:#00ff00;font-size:13px;text-transform:uppercase;letter-spacing:1px;flex:1}
-    .status-indicator{width:8px;height:8px;border-radius:50%;background:#00ff00;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-    .code-block{background:rgba(0,40,0,0.18);border-left:3px solid #00ff00;padding:10px;font-size:13px;line-height:1.5;color:#bfffcf;overflow:auto}
-    .skill-bar{background:rgba(0,255,0,0.06);height:6px;margin:8px 0;border-radius:6px;overflow:hidden}
-    .skill-progress{height:100%;width:0;background:linear-gradient(90deg,#00ff00,#4ecdc4);animation:fillBar 1.6s forwards}
-    @keyframes fillBar{to{width:var(--width)}}
-    .traffic-graph{display:flex;align-items:end;gap:8px;height:60px;margin:8px 0;background:rgba(0,255,0,0.02);padding:8px;border-radius:6px}
-    .traffic-bar{width:18px;background:linear-gradient(to top,#00ff00,#4ecdc4);height:40%;transition:height .5s ease;border-radius:4px}
-
-    .module a{color:#4ecdc4;text-decoration:none;transition:all .15s ease}
-    .module a:hover{color:#ff6b6b;text-shadow:0 0 8px #ff6b6b}
-
-    @media (max-width:768px){
-      .terminal{width:calc(100% - 28px);margin:18px}
-      .dashboard{gap:12px;padding:8px}
-      .matrix-column{font-size:12px}
+    #matrix {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
+    .matrix-column {
+      position: absolute;
+      top: 0;
+      white-space: pre;
+      animation: fall linear infinite;
+      color: rgba(0,255,0,0.2);
+      font-size: 14px;
+    }
+    @keyframes fall {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(100%); }
+    }
+    #terminal, #dashboard {
+      position: relative;
+      z-index: 1;
+      padding: 20px;
+    }
+    #terminal {
+      width: 100%;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      overflow-y: auto;
+    }
+    .terminal-line {
+      margin: 2px 0;
+    }
+    .command { color: #00ff00; }
+    .prompt { color: #ffaa00; }
+    .output { color: #00ffaa; }
+    #dashboard {
+      display: none;
+      min-height: 100vh;
+      background: rgba(0,0,0,0.85);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+    .module {
+      border: 1px solid #00ff00;
+      border-radius: 10px;
+      padding: 15px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+      background: rgba(0,0,0,0.6);
+    }
+    .module.active { opacity: 1; transform: translateY(0); }
+    .module-header { display: flex; align-items: center; margin-bottom: 10px; }
+    .module-icon { margin-right: 8px; }
+    .code-block { background: rgba(0,255,0,0.1); padding: 10px; border-radius: 8px; font-size: 14px; }
+    .traffic-bars { display: flex; gap: 4px; align-items: flex-end; height: 80px; margin: 10px 0; }
+    .traffic-bar {
+      width: 6px;
+      background: #00ff00;
+      height: var(--height, 20%);
+      transition: height 0.5s ease;
+    }
+    canvas { width: 100% !important; height: 200px !important; }
+    .module a { color: #4ecdc4; text-decoration: none; transition: 0.2s; }
+    .module a:hover { color: #ff6b6b; text-shadow: 0 0 10px #ff6b6b; }
   </style>
 </head>
 <body>
-  <div class="matrix-bg" id="matrix"></div>
-  <div class="scanlines" aria-hidden="true"></div>
+  <div id="matrix"></div>
 
-  <!-- Intro Terminal -->
-  <div class="terminal" id="terminal">
-    <div class="terminal-header">
-      <div class="terminal-buttons">
-        <div class="btn close"></div><div class="btn min"></div><div class="btn max"></div>
-      </div>
-      <div class="terminal-title">root@amar-dev:~#</div>
-    </div>
-    <div class="terminal-body" id="terminal-body" aria-live="polite"></div>
+  <!-- Boot Terminal -->
+  <div id="terminal">
+    <div id="terminal-body"></div>
   </div>
 
   <!-- Dashboard -->
-  <main class="dashboard" id="dashboard">
-    <!-- PROFILE -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">USER.PROFILE</div><div class="status-indicator" aria-hidden="true"></div></div>
+  <div id="dashboard">
+    <!-- SEC.MONITOR -->
+    <div class="module">
+      <div class="module-header"><span class="module-icon">🛡️</span><span>SEC.MONITOR</span></div>
       <div class="code-block">
-{
-  "name":"Amar Chandan",
-  "role":"Software Engineer | Cybersec Enthusiast",
-  "location":"India",
-  "status":"ACTIVE"
-}
+        <p>Status: ACTIVE</p>
+        <p>Firewall: ENABLED</p>
+        <p>Threats Detected: 0</p>
+        <p>Intrusion Logs: CLEAN</p>
       </div>
-    </section>
-
-    <!-- PROGRAMMING -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">PROGRAMMING.LANG</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div>
-        <div>Python<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-        <div>C/C++<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-        <div>Rust<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-        <div>JavaScript<div class="skill-bar"><div class="skill-progress" style="--width:88%"></div></div></div>
-        <div>Go<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-        <div>Java<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-      </div>
-    </section>
-
-    <!-- DATABASE -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">DATABASE.SYS</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div>
-        <div>MySQL<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-        <div>PostgreSQL<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-        <div>MongoDB<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-        <div>Redis<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-        <div>SQLite<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-      </div>
-    </section>
-
-    <!-- LINUX/DEVOPS -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">LINUX.DEVOPS</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div>
-        <div>Linux Admin<div class="skill-bar"><div class="skill-progress" style="--width:92%"></div></div></div>
-        <div>Docker<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-        <div>Kubernetes<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-        <div>AWS<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-        <div>Shell Scripting<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-      </div>
-    </section>
-
-    <!-- CYBERSEC -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">CYBERSEC.SKILLS</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div>
-        <div>Penetration Testing<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-        <div>Ethical Hacking<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-        <div>Vulnerability Assessment<div class="skill-bar"><div class="skill-progress" style="--width:88%"></div></div></div>
-        <div>Malware Analysis<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-        <div>Digital Forensics<div class="skill-bar"><div class="skill-progress" style="--width:70%"></div></div></div>
-      </div>
-    </section>
-
-    <!-- NETWORK -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">NETWORK.SKILLS</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div>
-        <div>Network Analysis<div class="skill-bar"><div class="skill-progress" style="--width:90%"></div></div></div>
-        <div>Wireshark<div class="skill-bar"><div class="skill-progress" style="--width:85%"></div></div></div>
-        <div>TCP/IP<div class="skill-bar"><div class="skill-progress" style="--width:95%"></div></div></div>
-        <div>Firewall Config<div class="skill-bar"><div class="skill-progress" style="--width:80%"></div></div></div>
-        <div>VPN Setup<div class="skill-bar"><div class="skill-progress" style="--width:75%"></div></div></div>
-      </div>
-    </section>
-
-    <!-- HOBBIES -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">HOBBIES</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div class="code-block">
-- Competitive Programming<br/>
-- Open Source Contributing<br/>
-- CTF Challenges<br/>
-- Linux Rice Customization<br/>
-- Hardware Tinkering<br/>
-- Gaming & Streaming<br/>
-- Tech Blog Writing<br/>
-- Electronics Projects
-      </div>
-    </section>
-
-    <!-- REPOS -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">REPO.LIST</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div class="code-block">
-$ ls -la ~/projects/<br/>
-web-scanner/<br/>crypto-tool/<br/>network-monitor/<br/>api-fuzzer/<br/>ml-classifier/<br/>blockchain-poc/<br/>pentesting-suite/<br/>portfolio-site/
-      </div>
-    </section>
+    </div>
 
     <!-- NET.TRAFFIC -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">NET.TRAFFIC</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div class="traffic-graph" id="traffic-graph">
-        <div class="traffic-bar"></div>
-        <div class="traffic-bar"></div>
-        <div class="traffic-bar"></div>
-        <div class="traffic-bar"></div>
-        <div class="traffic-bar"></div>
-      </div>
+    <div class="module">
+      <div class="module-header"><span class="module-icon">📡</span><span>NET.TRAFFIC</span></div>
       <div class="code-block">
-        <div id="upload-speed">↑ 1.2 MB/s</div>
-        <div id="download-speed">↓ 5.8 MB/s</div>
+        <div class="traffic-bars">
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+          <div class="traffic-bar"></div>
+        </div>
+        <p id="upload-speed">↑ 0 MB/s</p>
+        <p id="download-speed">↓ 0 MB/s</p>
+        <p>RX Packets: <span id="rx-packets">15847</span></p>
+        <p>TX Packets: <span id="tx-packets">12934</span></p>
+        <p>Status: <span id="traffic-status">Initializing...</span></p>
+        <canvas id="trafficChart"></canvas>
       </div>
-    </section>
+    </div>
 
-    <!-- SEC.MONITOR -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">SEC.MONITOR</div><div class="status-indicator" aria-hidden="true"></div></div>
+    <!-- CONTACT.MODULE -->
+    <div class="module">
+      <div class="module-header"><span class="module-icon">📨</span><span>CONTACT.MODULE</span></div>
       <div class="code-block">
-[OK] SSH login successful<br/>
-[OK] Firewall rules updated<br/>
-[OK] SSL certificates valid<br/>
-[WARN] 3 failed login attempts<br/>
-All systems secure ✓
+        <p>📷 Instagram: <a href="https://instagram.com/yourusername" target="_blank">instagram.com/yourusername</a></p>
+        <p>✈️ Telegram: <a href="https://t.me/yourusername" target="_blank">t.me/yourusername</a></p>
+        <p>🎮 Discord: <a href="https://discord.gg/yourserver" target="_blank">discord.gg/yourserver</a></p>
+        <p>💼 LinkedIn: <a href="https://linkedin.com/in/yourusername" target="_blank">linkedin.com/in/yourusername</a></p>
+        <p>🐙 GitHub: <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a></p>
+        <p>📧 Email: <a href="mailto:youremail@example.com">youremail@example.com</a></p>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- CONTACT -->
-    <section class="module">
-      <div class="module-header"><div class="module-title">CONTACT.MODULE</div><div class="status-indicator" aria-hidden="true"></div></div>
-      <div class="code-block">
-📷 Instagram: <a href="https://instagram.com/yourusername" target="_blank" rel="noopener">instagram.com/yourusername</a><br/>
-✈️ Telegram: <a href="https://t.me/yourusername" target="_blank" rel="noopener">t.me/yourusername</a><br/>
-🎮 Discord: <a href="https://discord.gg/yourserver" target="_blank" rel="noopener">discord.gg/yourserver</a><br/>
-💼 LinkedIn: <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener">linkedin.com/in/yourusername</a><br/>
-🐙 GitHub: <a href="https://github.com/yourusername" target="_blank" rel="noopener">github.com/yourusername</a><br/>
-📧 Email: <a href="mailto:youremail@example.com">youremail@example.com</a>
-      </div>
-    </section>
-
-  </main>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    /* ---------- MATRIX ---------- */
+    // Matrix rain
     function createMatrix(){
-      const matrix = document.getElementById('matrix');
-      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-      matrix.innerHTML = '';
-      const cols = 60;
-      for(let i=0;i<cols;i++){
-        const col = document.createElement('div');
-        col.className = 'matrix-column';
-        col.style.left = (Math.random()*100) + '%';
-        col.style.animationDuration = (8 + Math.random()*12) + 's';
-        col.style.animationDelay = (Math.random()*5) + 's';
-        let text = '';
-        for(let j=0;j<25;j++) text += chars[Math.floor(Math.random()*chars.length)];
-        col.textContent = text;
-        matrix.appendChild(col);
+      const matrix=document.getElementById('matrix');
+      const chars='01アイウエオカキクケコサシスセソワヲン';
+      matrix.innerHTML='';
+      for(let i=0;i<60;i++){
+        const col=document.createElement('div');
+        col.className='matrix-column';
+        col.style.left=Math.random()*100+'%';
+        col.style.animationDuration=(5+Math.random()*10)+'s';
+        let text=''; for(let j=0;j<25;j++){ text+=chars[Math.floor(Math.random()*chars.length)]; }
+        col.textContent=text; matrix.appendChild(col);
       }
     }
-    createMatrix();
-    setInterval(() => {
-      document.querySelectorAll('.matrix-column').forEach(col => {
-        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-        let text = '';
-        for(let j=0;j<25;j++) text += chars[Math.floor(Math.random()*chars.length)];
-        col.textContent = text;
-      });
-    }, 200);
+    createMatrix(); setInterval(createMatrix,15000);
 
-    /* ---------- BOOT-STYLE TERMINAL (scripted, non-interactive) ---------- */
-    const terminalBody = document.getElementById('terminal-body');
-    const terminal = document.getElementById('terminal');
-    const dashboard = document.getElementById('dashboard');
-
-    // Use the exact commands array you provided (with dynamic date)
+    // Boot commands
     const commands = [
       { cmd: "ssh root@amar-dev.local", type: "command" },
       { cmd: "Password: ********", type: "prompt" },
       { cmd: "Welcome to Amar's Development Environment", type: "output" },
       { cmd: "Last login: " + new Date().toLocaleString(), type: "output" },
-      { cmd: "", type: "output" },
       { cmd: "$ sudo ./initialize_portfolio.sh", type: "command" },
       { cmd: "[INFO] Loading user profile...", type: "output" },
       { cmd: "[INFO] Scanning skill database...", type: "output" },
       { cmd: "[INFO] Establishing network connections...", type: "output" },
       { cmd: "[INFO] Initializing security protocols...", type: "output" },
       { cmd: "[SUCCESS] System ready!", type: "output" },
-      { cmd: "", type: "output" },
       { cmd: "$ cat /etc/motd", type: "command" },
       { cmd: "╔═══════════════════════════════════════╗", type: "output" },
       { cmd: "║        WELCOME TO THE MATRIX          ║", type: "output" },
-      { cmd: "║     Amar Chandan - Root Access       ║", type: "output" },
+      { cmd: "║     Amar Chandan - Root Access        ║", type: "output" },
       { cmd: "╚═══════════════════════════════════════╝", type: "output" },
-      { cmd: "", type: "output" },
       { cmd: "$ ./launch_dashboard.py", type: "command" },
       { cmd: "[INIT] Loading modules...", type: "output" }
     ];
 
-    // typing config
-    const CHAR_MIN_DELAY = 12; // speed per character (ms)
-    const CHAR_MAX_DELAY = 45;
-    const AFTER_COMMAND_DELAY = 500; // pause after a line finishes
-    const FINAL_DELAY_BEFORE_DASHBOARD = 900; // after last command, wait then switch
-
-    let cmdIndex = 0;
-
-    function appendLine(text, cls){
-      const line = document.createElement('div');
-      line.className = 'terminal-line ' + (cls || 'output');
-      line.textContent = text;
-      terminalBody.appendChild(line);
-      terminalBody.scrollTop = terminalBody.scrollHeight;
-      return line;
-    }
-
-    // type a single command/output with typing effect
-    function typeEntry(entry, onDone){
-      const { cmd, type } = entry;
-      // For outputs (like multi-line ascii) we just print without typewriter for speed, but still use small stagger
-      if (type === 'output' && (cmd.length > 40 || cmd.indexOf('═') !== -1)){
-        // print quickly but with slight delay
-        appendLine(cmd, type);
-        setTimeout(onDone, 120);
-        return;
+    const terminalBody=document.getElementById("terminal-body");
+    let i=0;
+    function typeCommand(){
+      if(i<commands.length){
+        const line=document.createElement("div");
+        line.className="terminal-line "+commands[i].type;
+        line.textContent=commands[i].cmd;
+        terminalBody.appendChild(line);
+        terminalBody.scrollTop=terminalBody.scrollHeight;
+        i++; setTimeout(typeCommand, 600);
+      } else {
+        setTimeout(()=>{
+          document.getElementById("terminal").style.display="none";
+          const dashboard=document.getElementById("dashboard");
+          dashboard.style.display="grid";
+          document.querySelectorAll('.module').forEach((m,idx)=>setTimeout(()=>m.classList.add('active'),idx*300));
+          animateTrafficBars(); // start NET.TRAFFIC
+        }, 1000);
       }
+    }
+    setTimeout(typeCommand, 1000);
 
-      // create empty element and type into it
-      const line = document.createElement('div');
-      line.className = 'terminal-line ' + type;
-      terminalBody.appendChild(line);
-      let i = 0;
+    // Advanced NET.TRAFFIC
+    function animateTrafficBars() {
+      const bars=document.querySelectorAll('.traffic-bar');
+      const uploadSpeed=document.getElementById('upload-speed');
+      const downloadSpeed=document.getElementById('download-speed');
+      const trafficStatus=document.getElementById('traffic-status');
+      const rxPackets=document.getElementById('rx-packets');
+      const txPackets=document.getElementById('tx-packets');
 
-      function step(){
-        if (i < cmd.length){
-          line.textContent = cmd.substring(0, i+1) + ((i % 2 === 0) ? '' : '');
-          i++;
-          const delay = CHAR_MIN_DELAY + Math.random() * (CHAR_MAX_DELAY - CHAR_MIN_DELAY);
-          terminalBody.scrollTop = terminalBody.scrollHeight;
-          setTimeout(step, delay);
-        } else {
-          terminalBody.scrollTop = terminalBody.scrollHeight;
-          setTimeout(onDone, AFTER_COMMAND_DELAY);
+      let rxCount=15847, txCount=12934;
+
+      // Chart setup
+      const ctx=document.getElementById('trafficChart').getContext('2d');
+      const trafficChart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:[],
+          datasets:[
+            { label:'Upload MB/s', borderColor:'#00ff00', data:[], fill:false },
+            { label:'Download MB/s', borderColor:'#00aaff', data:[], fill:false }
+          ]
+        },
+        options:{
+          responsive:true,
+          animation:false,
+          scales:{ x:{display:false}, y:{beginAtZero:true} },
+          plugins:{ legend:{ labels:{ color:'#00ff00' } } }
         }
-      }
-      step();
-    }
-
-    // Walk through commands array sequentially
-    function runCommands(index){
-      if (index >= commands.length){
-        // finished boot sequence -> transition to dashboard
-        setTimeout(() => {
-          // fade-out terminal then hide
-          terminal.style.transition = 'all 600ms ease';
-          terminal.style.opacity = '0';
-          terminal.style.transform = 'translateY(-10px) scale(.995)';
-          setTimeout(()=>{
-            terminal.style.display = 'none';
-            // show dashboard and reveal modules one-by-one
-            showDashboardModules();
-          }, 500);
-        }, FINAL_DELAY_BEFORE_DASHBOARD);
-        return;
-      }
-
-      typeEntry(commands[index], () => {
-        runCommands(index + 1);
-      });
-    }
-
-    // Start the boot typed terminal after small delay
-    window.addEventListener('load', () => {
-      // ensure terminal-body empty (in case)
-      terminalBody.innerHTML = '';
-      setTimeout(()=> runCommands(0), 700);
-    });
-
-    /* ---------- DASHBOARD reveal logic ---------- */
-    function showDashboardModules(){
-      dashboard.style.display = 'grid';
-      const modules = Array.from(document.querySelectorAll('.module'));
-      const baseDelay = 120; // initial delay
-      const stepDelay = 180; // per module
-      modules.forEach((mod, idx) => {
-        setTimeout(() => {
-          mod.classList.add('active');
-          // Force reflow to restart any skill progress animations if needed
-          mod.querySelectorAll('.skill-progress').forEach(sp => {
-            sp.style.animation = 'none';
-            // tiny timeout then restore so CSS animation runs
-            setTimeout(()=> sp.style.animation = '', 20);
-          });
-        }, baseDelay + idx * stepDelay);
       });
 
-      // start traffic animation after reveal
-      setTimeout(startTrafficAnimation, baseDelay + modules.length * stepDelay + 200);
-    }
-
-    /* ---------- NET.TRAFFIC animation ---------- */
-    function startTrafficAnimation(){
-      const bars = document.querySelectorAll('#traffic-graph .traffic-bar');
-      const upEl = document.getElementById('upload-speed');
-      const downEl = document.getElementById('download-speed');
-
-      function tick(){
-        bars.forEach(bar => {
-          const pct = 20 + Math.random() * 80; // percent
-          bar.style.height = pct + '%';
+      setInterval(()=>{
+        // Bars
+        bars.forEach(bar=>{
+          const h=Math.random()*80+20;
+          bar.style.setProperty('--height', h+'%');
         });
-        if (upEl) upEl.textContent = '↑ ' + (Math.random()*2 + 0.5).toFixed(1) + ' MB/s';
-        if (downEl) downEl.textContent = '↓ ' + (Math.random()*8 + 2).toFixed(1) + ' MB/s';
-      }
-      tick();
-      setInterval(tick, 1800);
+
+        // Speeds
+        const up=(Math.random()*2+0.5).toFixed(1);
+        const down=(Math.random()*8+2).toFixed(1);
+        uploadSpeed.textContent=`↑ ${up} MB/s`;
+        downloadSpeed.textContent=`↓ ${down} MB/s`;
+
+        // Packets
+        rxCount+=Math.floor(Math.random()*50+10);
+        txCount+=Math.floor(Math.random()*30+5);
+        rxPackets.textContent=rxCount;
+        txPackets.textContent=txCount;
+
+        // Status
+        const statuses=[
+          'Monitoring network interfaces...',
+          'Analyzing traffic patterns...',
+          `Network load: ${Math.floor(Math.random()*40+40)}%`,
+          `Bandwidth utilization: ${Math.floor(Math.random()*60+30)}%`,
+          'Connection stability: OPTIMAL',
+          'Firewall status: ACTIVE',
+          'Packet loss: 0%',
+          'Threat detection: NONE'
+        ];
+        trafficStatus.textContent=statuses[Math.floor(Math.random()*statuses.length)];
+
+        // Chart update
+        const ts=new Date().toLocaleTimeString();
+        trafficChart.data.labels.push(ts);
+        trafficChart.data.datasets[0].data.push(up);
+        trafficChart.data.datasets[1].data.push(down);
+        if(trafficChart.data.labels.length>15){
+          trafficChart.data.labels.shift();
+          trafficChart.data.datasets[0].data.shift();
+          trafficChart.data.datasets[1].data.shift();
+        }
+        trafficChart.update();
+      },2000);
     }
   </script>
 </body>
